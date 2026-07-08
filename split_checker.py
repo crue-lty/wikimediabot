@@ -1,16 +1,21 @@
-import json, requests, time
+import json, os, requests, time
+from dotenv import load_dotenv
+
+load_dotenv()
 
 headers = {
   'User-Agent': 'WikimediaBot v1.0'
 }
 
-webhook_url = "https://discord.com/api/webhooks/1521467779562082314/e4_f5HC-_8K8yFUMla1vBoClXLnk8UCv362A7Gf4tWQI3v7a5I5GKOJGOWeM3JSP3Hms"
+webhook_url = os.getenv('TOKEN')
 url = 'https://commons.wikimedia.org/wiki/Special:Random'
 
 # ~~~~~~~~~~~~~~~~~ Sends a new link X times
-for i in range(3):
+for i in range(5):
   r = requests.get(url, headers=headers, allow_redirects=False)
   link = r.headers['Location']
+  if link.startswith('//') == True:
+    link = 'https:' + link
   location = link.split('/')[4]
   new_link = 'https://commons.wikimedia.org/w/rest.php/v1/file/' + location
 
@@ -26,18 +31,31 @@ for i in range(3):
   format = ready_link.split('.')[-1]
 
   if ready_link.startswith('https') == False:
-    fixed_link = 'https:' + ready_link
-    print(fixed_link)
-  else:
-    print("Ready link: " + ready_link)
-  time.sleep(3)
+    ready_link = 'https:' + ready_link
+  print('Ready link: ' + ready_link)
+  print('Link: ' + link)
+  time.sleep(2)
 
-  discord_message = requests.post(webhook_url, data={'content':ready_link})
+  discord_message = requests.post(webhook_url, json={
+    'embeds': [
+      {
+      'title': location,
+      'url': link
+      },
+      {
+      'image': {
+        'url': ready_link
+      }
+      }
+    ]
+  })
+  if discord_message.status_code != 204:
+    print(discord_message.json())
+  print(discord_message.status_code)
+  print(data)
 
 # ~~~~~~~~~~~~~~~~~ Checks whether the file is an image
 # if format in format_image:
 #     print('The format of the file is ' + format + '.\n' + ready_link)
 # else:
 #     print('This file is not an image.')
-
-
