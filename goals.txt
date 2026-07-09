@@ -1,0 +1,8 @@
+PO CO MI TE FILE FORMATS XD
+
+
+czy ja chcę losować np. TYLKO obrazki? czy pliki dźwiękowe też?
+
+jeśli chcę inne rzeczy niż tylko obrazki, to muszę zrobić dla nich inaczej embed, bo dźwięki się nie pokazują poprawnie.
+
+a jeśli by coś nie działało, czyli obrazki przestałyby się embeddować, to może faktycznie trzeba by je ściągać kind of i wtedy przesyłać na discorda...

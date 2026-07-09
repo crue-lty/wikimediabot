@@ -1,17 +1,17 @@
-import json, os, requests, time
+import ctypes, os, requests, time
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv() # Opens the window
 
 headers = {
-  'User-Agent': 'WikimediaBot v1.0'
+  'User-Agent': 'CrowBot'
 }
 
 webhook_url = os.getenv('TOKEN')
 url = 'https://commons.wikimedia.org/wiki/Special:Random'
 
-# ~~~~~~~~~~~~~~~~~ Sends a new link X times
-for i in range(5):
+# ~~~~~~~~~~~~~~~~~ Sends a new link X times ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+for i in range(100):
   r = requests.get(url, headers=headers, allow_redirects=False)
   link = r.headers['Location']
   if link.startswith('//') == True:
@@ -19,43 +19,52 @@ for i in range(5):
   location = link.split('/')[4]
   new_link = 'https://commons.wikimedia.org/w/rest.php/v1/file/' + location
 
+  # ~~~~~~~~~~~~~~~~~ Pull a new link out of the hat, show the status code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   response = requests.get(new_link, headers=headers)
+  print(response.status_code)
+  if response.status_code == 429:
+    time.sleep(10)
+    continue
   data = response.json()
   ready_link = data['preferred']['url']
 
-  # ~~~~~~~~~~~~~~~~~ File formats
-  format_audio = ('mp3', 'ogg', 'flac', 'wav', 'wave', 'midi', 'wma', 'aiff', 'aac', 'alac')
-  # format_image = ('jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp', 'svg', 'gif', 'webp', 'xcf', 'dng', 'raw', 'ico', 'avif')
-  format_bitmap = data['preferred']['mediatype']
+  # ~~~~~~~~~~~~~~~~~ File formats ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  format_audio = ''
+  format_image = ''
   format_text = ('djvu', 'pdf', 'txt', 'doc', 'docx', 'epub')
-  format = ready_link.split('.')[-1]
 
+  if data['preferred']['mediatype'] == 'AUDIO':
+    format_audio = 'audio_file';
+  elif data['preferred']['mediatype'] == 'BITMAP':
+    format_image == 'image_file';
+  format = link.split('.')[-1]
+
+  # ~~~~~~~~~~~~~~~~~ Counter; adds https: to the links as well ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   if ready_link.startswith('https') == False:
     ready_link = 'https:' + ready_link
-  print('Ready link: ' + ready_link)
-  print('Link: ' + link)
-  time.sleep(2)
+  print(str(i + 1) + ' | Ready link: ' + ready_link)
+  print(str(i + 1) + ' | Link: ' + link)
+  time.sleep(4)
 
-  discord_message = requests.post(webhook_url, json={
-    'embeds': [
-      {
-      'title': location.replace('_', '\\_'),
-      'url': link
-      },
-      {
-      'image': {
-        'url': ready_link
-      }
-      }
-    ]
-  })
-  if discord_message.status_code != 204:
-    print(discord_message.json())
-  print(discord_message.status_code)
-  print(data)
+  # ~~~~~~~~~~~~~~~~~ Webhook ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# ~~~~~~~~~~~~~~~~~ Checks whether the file is an image
-# if format in format_image:
-#     print('The format of the file is ' + format + '.\n' + ready_link)
-# else:
-#     print('This file is not an image.')
+  # discord_message = requests.post(webhook_url, json={
+  #   'embeds': [
+  #     {
+  #     'title': location.replace('_', '\\_'),
+  #     'url': link
+  #     },
+  #     {
+  #     'image': {
+  #       'url': ready_link
+  #     }
+  #     }
+  #   ]
+  # })
+
+  # if discord_message.status_code != 204:
+  #   print(discord_message.json())
+  # print(discord_message.status_code)
+
+MessageBox = ctypes.windll.user32.MessageBoxW
+MessageBox(None, ':)', 'Check me out!!!', 0)
