@@ -18,9 +18,11 @@ for i in range(10):
   if link.startswith('//') == True:
     link = 'https:' + link
   location = link.split('/')[4]
-  embed_title = unquote(location.replace('_', ' '))
-  new_link = 'https://commons.wikimedia.org/w/rest.php/v1/file/' + location
+  embed_title = unquote(location.replace('_', ' ')).split(':')[-1].split('.')[0:-1]
+  embed_title = str('.'.join(embed_title))
 
+  new_link = 'https://commons.wikimedia.org/w/rest.php/v1/file/' + location
+  
   # ~~~~~~~~~~~~~~~~~ Pull a new link out of the hat, show the status code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   response = requests.get(new_link, headers=headers)
   print(response.status_code)
@@ -68,5 +70,5 @@ for i in range(10):
     print(discord_message.json())
   print(discord_message.status_code)
 
-MessageBox = ctypes.windll.user32.MessageBoxW
-MessageBox(None, ':)', 'Check me out!!!', 0)
+# MessageBox = ctypes.windll.user32.MessageBoxW
+# MessageBox(None, ':)', 'Check me out!!!', 0)

@@ -17,3 +17,7 @@ było
 Looking over the River Fyne - geograph.org.uk - 2154347
 
 czyli w sumie embed_title.split i wyciągnąć wszystko poza pierwszą i ostatnią kolumną. trzeba zobaczyć czy da się to w jednej zmiennej umieścić, idk, coś z minusem np. żeby format wywalić.
+
+UPDATE: UDAŁO się
+
+-------------------
